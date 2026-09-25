@@ -38,6 +38,7 @@ class GameLevel {
   });
 
   int get totalCards => rows * cols;
+  int get maxMoves => (targetMoves * 2.5).round().clamp(targetMoves + 2, 9999);
 
   /// Generates a shuffled list of pairs for this level
   List<GameCard> generateCards() {

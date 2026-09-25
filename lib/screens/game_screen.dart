@@ -9,6 +9,7 @@ import '../widgets/neo_badge.dart';
 import '../widgets/neo_button.dart';
 import '../widgets/neo_card.dart';
 import '../widgets/victory_dialog.dart';
+import '../widgets/game_over_dialog.dart';
 
 class GameScreen extends StatefulWidget {
   final GameLevel level;
@@ -29,6 +30,7 @@ class _GameScreenState extends State<GameScreen> {
   int _matchesFound = 0;
   int _secondsElapsed = 0;
   Timer? _timer;
+  bool _isGameOver = false;
 
   @override
   void initState() {
@@ -62,12 +64,13 @@ class _GameScreenState extends State<GameScreen> {
       _movesCount = 0;
       _matchesFound = 0;
       _isProcessing = false;
+      _isGameOver = false;
     });
     _startTimer();
   }
 
   void _onCardTapped(int index) {
-    if (_isProcessing) return;
+    if (_isProcessing || _isGameOver) return;
     if (_cards[index].isFaceUp || _cards[index].isMatched) return;
     if (_selectedIndices.contains(index)) return;
 
@@ -95,7 +98,11 @@ class _GameScreenState extends State<GameScreen> {
             _isProcessing = false;
           });
 
-          _checkVictory();
+          if (_matchesFound == _currentLevel.totalPairs) {
+            _checkVictory();
+          } else if (_movesCount >= _currentLevel.maxMoves) {
+            _checkGameOver();
+          }
         });
       } else {
         // NOT MATCHED - Flip back after delay
@@ -107,6 +114,10 @@ class _GameScreenState extends State<GameScreen> {
             _selectedIndices.clear();
             _isProcessing = false;
           });
+
+          if (_movesCount >= _currentLevel.maxMoves) {
+            _checkGameOver();
+          }
         });
       }
     }
@@ -117,9 +128,34 @@ class _GameScreenState extends State<GameScreen> {
       return 3;
     } else if (_movesCount <= (_currentLevel.targetMoves * 1.5).round()) {
       return 2;
-    } else {
+    } else if (_movesCount < _currentLevel.maxMoves) {
       return 1;
+    } else {
+      return 0;
     }
+  }
+
+  void _checkGameOver() {
+    _timer?.cancel();
+    setState(() {
+      _isGameOver = true;
+    });
+
+    Future.delayed(const Duration(milliseconds: 350), () {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => GameOverDialog(
+          level: _currentLevel,
+          moves: _movesCount,
+          matchesFound: _matchesFound,
+          timeSeconds: _secondsElapsed,
+          onPlayAgain: _startNewGame,
+          onMenu: () => Navigator.of(context).pop(),
+        ),
+      );
+    });
   }
 
   void _checkVictory() {
@@ -359,7 +395,7 @@ class _GameScreenState extends State<GameScreen> {
   double _calculateBarProgress() {
     final int target = _currentLevel.targetMoves;
     final int twoStarLimit = (target * 1.5).round();
-    final int hardLimit = (target * 2.5).round().clamp(target + 2, 9999);
+    final int hardLimit = _currentLevel.maxMoves;
 
     if (_movesCount == 0) return 1.0;
     if (_movesCount >= hardLimit) return 0.0;
