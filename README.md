@@ -114,7 +114,7 @@ lib/
 
 1. **Clone repository ini:**
    ```bash
-   git clone <URL_REPOSITORY_ANDA>
+   git clone https://github.com/SukaMCD/PTSF.git
    cd PTSF
    ```
 
