@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/home_screen.dart';
+import 'screens/splash_screen.dart';
 import 'theme/neo_brutalism_theme.dart';
 
 void main() {
@@ -24,7 +24,7 @@ class MemoryMatchApp extends StatelessWidget {
         scaffoldBackgroundColor: NeoColors.background,
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 }
