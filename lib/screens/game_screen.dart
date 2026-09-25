@@ -354,31 +354,143 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  double _calculateStarProgress() {
+    final target = _currentLevel.targetMoves;
+    final twoStarLimit = (_currentLevel.targetMoves * 1.5).round();
+    final oneStarLimit = (_currentLevel.targetMoves * 2.2).round();
+
+    if (_movesCount <= target) {
+      final double ratio = target == 0 ? 0.0 : (_movesCount / target);
+      return (1.0 - (ratio * 0.33)).clamp(0.67, 1.0);
+    } else if (_movesCount <= twoStarLimit) {
+      final double diff = (twoStarLimit - target).toDouble();
+      final double progressInTier = diff <= 0 ? 1.0 : (_movesCount - target) / diff;
+      return (0.67 - (progressInTier * 0.33)).clamp(0.34, 0.67);
+    } else {
+      final double diff = (oneStarLimit - twoStarLimit).toDouble();
+      final double progressInTier = diff <= 0 ? 1.0 : (_movesCount - twoStarLimit) / diff;
+      return (0.34 - (progressInTier * 0.26)).clamp(0.08, 0.34);
+    }
+  }
+
   Widget _buildBottomControls() {
+    final currentStars = _calculateStars();
+    final progress = _calculateStarProgress();
+
+    Color barColor;
+    if (currentStars == 3) {
+      barColor = NeoColors.primaryYellow;
+    } else if (currentStars == 2) {
+      barColor = NeoColors.primaryOrange;
+    } else {
+      barColor = NeoColors.primaryPink;
+    }
+
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
       child: Row(
         children: [
+          // Stacked Star Progress Bar Container
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              height: 48,
               decoration: NeoBox.container(
                 color: Colors.white,
                 borderRadius: 12,
                 borderWidth: 2.5,
                 shadowOffset: const Offset(3, 3),
               ),
-              child: Row(
-                children: [
-                  const Icon(Icons.info_outline, size: 20, color: NeoColors.dark),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Target ≤ ${_currentLevel.targetMoves} moves untuk 3 ★',
-                      style: NeoTypography.body(fontSize: 12),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(9.5),
+                child: Stack(
+                  alignment: Alignment.centerLeft,
+                  children: [
+                    // Background track
+                    Container(
+                      color: const Color(0xFFF1F2F6),
                     ),
-                  ),
-                ],
+
+                    // Animated Progress Fill (berkurang tiap kali moves bertambah)
+                    AnimatedFractionallySizedBox(
+                      duration: const Duration(milliseconds: 350),
+                      curve: Curves.easeOutCubic,
+                      alignment: Alignment.centerLeft,
+                      widthFactor: progress,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: barColor,
+                          border: const Border(
+                            right: BorderSide(color: NeoColors.dark, width: 2.2),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Foreground Elements Bertumpuk: Target info & 3 Bintang
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Target Moves Pill
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: NeoColors.dark, width: 1.8),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: NeoColors.dark,
+                                  offset: Offset(1.5, 1.5),
+                                  blurRadius: 0,
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              'TARGET ≤ ${_currentLevel.targetMoves}',
+                              style: NeoTypography.label(fontSize: 10),
+                            ),
+                          ),
+
+                          // 3 Stars bertumpuk di atas progress bar
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: List.generate(3, (index) {
+                              final bool isLit = index < currentStars;
+                              return Padding(
+                                padding: const EdgeInsets.only(left: 4.0),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: isLit ? NeoColors.primaryYellow : Colors.grey.shade300,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: NeoColors.dark, width: 1.8),
+                                    boxShadow: isLit
+                                        ? const [
+                                            BoxShadow(
+                                              color: NeoColors.dark,
+                                              offset: Offset(1.5, 1.5),
+                                              blurRadius: 0,
+                                            ),
+                                          ]
+                                        : [],
+                                  ),
+                                  child: Icon(
+                                    Icons.star,
+                                    size: 15,
+                                    color: isLit ? NeoColors.dark : Colors.grey.shade600,
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -388,7 +500,8 @@ class _GameScreenState extends State<GameScreen> {
             icon: Icons.replay,
             backgroundColor: NeoColors.primaryOrange,
             textColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+            height: 48,
             onPressed: _startNewGame,
           ),
         ],
