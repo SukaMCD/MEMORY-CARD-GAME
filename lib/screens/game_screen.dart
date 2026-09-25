@@ -354,43 +354,73 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  double _calculateStarProgress() {
-    final target = _currentLevel.targetMoves;
-    final twoStarLimit = (_currentLevel.targetMoves * 1.5).round();
-    final oneStarLimit = (_currentLevel.targetMoves * 2.2).round();
+  /// Progress bar: penuh di awal (1.0), berkurang setiap move.
+  /// Batas: 3★ = target, 2★ = 1.5×target, 1★ = 2.2×target, 0 = lebih dari itu.
+  double _calculateBarProgress() {
+    final int target = _currentLevel.targetMoves;
+    final int twoStarLimit = (target * 1.5).round();
+    final int hardLimit = (target * 2.5).round().clamp(target + 2, 9999);
 
+    if (_movesCount == 0) return 1.0;
+    if (_movesCount >= hardLimit) return 0.0;
+
+    // Bar dibagi 3 segmen (masing-masing 1/3):
+    // [1.0 → 0.667]  = zona 3 bintang (0..target moves)
+    // [0.667 → 0.333] = zona 2 bintang (target..twoStarLimit moves)
+    // [0.333 → 0.0]  = zona 1 bintang (twoStarLimit..hardLimit moves)
     if (_movesCount <= target) {
-      final double ratio = target == 0 ? 0.0 : (_movesCount / target);
-      return (1.0 - (ratio * 0.33)).clamp(0.67, 1.0);
+      final double t = target == 0 ? 1.0 : _movesCount / target;
+      return 1.0 - (t * 0.333);
     } else if (_movesCount <= twoStarLimit) {
-      final double diff = (twoStarLimit - target).toDouble();
-      final double progressInTier = diff <= 0 ? 1.0 : (_movesCount - target) / diff;
-      return (0.67 - (progressInTier * 0.33)).clamp(0.34, 0.67);
+      final double range = (twoStarLimit - target).toDouble();
+      final double t = range <= 0 ? 1.0 : (_movesCount - target) / range;
+      return 0.667 - (t * 0.333);
     } else {
-      final double diff = (oneStarLimit - twoStarLimit).toDouble();
-      final double progressInTier = diff <= 0 ? 1.0 : (_movesCount - twoStarLimit) / diff;
-      return (0.34 - (progressInTier * 0.26)).clamp(0.08, 0.34);
+      final double range = (hardLimit - twoStarLimit).toDouble();
+      final double t = range <= 0 ? 1.0 : (_movesCount - twoStarLimit) / range;
+      return (0.334 - (t * 0.334)).clamp(0.0, 0.334);
     }
   }
 
   Widget _buildBottomControls() {
-    final currentStars = _calculateStars();
-    final progress = _calculateStarProgress();
+    // Posisi bintang di progress bar (dari kiri, sebagai widthFactor):
+    // bintang 3 → threshold 3★ = 0.667 dari kiri
+    // bintang 2 → threshold 2★ = 0.333 dari kiri
+    // bintang 1 → threshold 1★ = 0.05 dari kiri (ujung kiri)
+    const double star3Pos = 0.667;
+    const double star2Pos = 0.333;
+    const double star1Pos = 0.05;
+
+    final double barProgress = _calculateBarProgress();
+
+    // Bintang menyala jika bar progress masih melewati posisi bintang itu
+    final bool star3Lit = barProgress >= star3Pos;
+    final bool star2Lit = barProgress >= star2Pos;
+    final bool star1Lit = barProgress >= star1Pos;
 
     Color barColor;
-    if (currentStars == 3) {
+    if (star3Lit) {
       barColor = NeoColors.primaryYellow;
-    } else if (currentStars == 2) {
+    } else if (star2Lit) {
       barColor = NeoColors.primaryOrange;
-    } else {
+    } else if (star1Lit) {
       barColor = NeoColors.primaryPink;
+    } else {
+      barColor = Colors.grey.shade400;
     }
+
+    // Definisi tiap bintang: [posisiBar, apakahMenyala]
+    final List<(double, bool)> starDefs = [
+      (star1Pos, star1Lit),
+      (star2Pos, star2Lit),
+      (star3Pos, star3Lit),
+    ];
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
       child: Row(
         children: [
-          // Stacked Star Progress Bar Container
+          // Progress Bar dengan bintang di posisinya masing-masing
           Expanded(
             child: Container(
               height: 48,
@@ -400,97 +430,105 @@ class _GameScreenState extends State<GameScreen> {
                 borderWidth: 2.5,
                 shadowOffset: const Offset(3, 3),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(9.5),
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    // Background track
-                    Container(
-                      color: const Color(0xFFF1F2F6),
-                    ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final double totalWidth = constraints.maxWidth;
 
-                    // Animated Progress Fill (berkurang tiap kali moves bertambah)
-                    AnimatedFractionallySizedBox(
-                      duration: const Duration(milliseconds: 350),
-                      curve: Curves.easeOutCubic,
-                      alignment: Alignment.centerLeft,
-                      widthFactor: progress,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: barColor,
-                          border: const Border(
-                            right: BorderSide(color: NeoColors.dark, width: 2.2),
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(9.5),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        // Track background
+                        Container(color: const Color(0xFFF0F0F0)),
+
+                        // Animated fill bar
+                        AnimatedFractionallySizedBox(
+                          duration: const Duration(milliseconds: 350),
+                          curve: Curves.easeOutCubic,
+                          alignment: Alignment.centerLeft,
+                          widthFactor: barProgress,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: barColor,
+                              border: const Border(
+                                right: BorderSide(color: NeoColors.dark, width: 2.0),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
 
-                    // Foreground Elements Bertumpuk: Target info & 3 Bintang
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Target Moves Pill
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                        // Garis pembatas vertikal di posisi setiap bintang
+                        for (final (pos, _) in starDefs)
+                          Positioned(
+                            left: totalWidth * pos - 1,
+                            top: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 2,
+                              color: NeoColors.dark.withValues(alpha: 0.2),
+                            ),
+                          ),
+
+                        // Bintang di posisi threshold masing-masing
+                        for (final (pos, isLit) in starDefs)
+                          Positioned(
+                            left: (totalWidth * pos - 14).clamp(2, totalWidth - 30),
+                            top: 0,
+                            bottom: 0,
+                            child: Center(
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 280),
+                                curve: Curves.easeOut,
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  color: isLit ? NeoColors.primaryYellow : Colors.grey.shade300,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: NeoColors.dark,
+                                    width: 2.0,
+                                  ),
+                                  boxShadow: isLit
+                                      ? const [
+                                          BoxShadow(
+                                            color: NeoColors.dark,
+                                            offset: Offset(2, 2),
+                                            blurRadius: 0,
+                                          ),
+                                        ]
+                                      : [],
+                                ),
+                                child: Icon(
+                                  Icons.star,
+                                  size: 14,
+                                  color: isLit ? NeoColors.dark : Colors.grey.shade500,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                        // Label "TARGET ≤ X" di ujung kiri atas bar
+                        Positioned(
+                          left: 8,
+                          top: 6,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: NeoColors.dark, width: 1.8),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: NeoColors.dark,
-                                  offset: Offset(1.5, 1.5),
-                                  blurRadius: 0,
-                                ),
-                              ],
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: NeoColors.dark, width: 1.5),
                             ),
                             child: Text(
-                              'TARGET ≤ ${_currentLevel.targetMoves}',
-                              style: NeoTypography.label(fontSize: 10),
+                              '≤ ${_currentLevel.targetMoves} moves',
+                              style: NeoTypography.label(fontSize: 9),
                             ),
                           ),
-
-                          // 3 Stars bertumpuk di atas progress bar
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: List.generate(3, (index) {
-                              final bool isLit = index < currentStars;
-                              return Padding(
-                                padding: const EdgeInsets.only(left: 4.0),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 300),
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: isLit ? NeoColors.primaryYellow : Colors.grey.shade300,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: NeoColors.dark, width: 1.8),
-                                    boxShadow: isLit
-                                        ? const [
-                                            BoxShadow(
-                                              color: NeoColors.dark,
-                                              offset: Offset(1.5, 1.5),
-                                              blurRadius: 0,
-                                            ),
-                                          ]
-                                        : [],
-                                  ),
-                                  child: Icon(
-                                    Icons.star,
-                                    size: 15,
-                                    color: isLit ? NeoColors.dark : Colors.grey.shade600,
-                                  ),
-                                ),
-                              );
-                            }),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ),
