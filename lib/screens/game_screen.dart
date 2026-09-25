@@ -508,23 +508,6 @@ class _GameScreenState extends State<GameScreen> {
                             ),
                           ),
 
-                        // Label "TARGET ≤ X" di ujung kiri atas bar
-                        Positioned(
-                          left: 8,
-                          top: 6,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(color: NeoColors.dark, width: 1.5),
-                            ),
-                            child: Text(
-                              '≤ ${_currentLevel.targetMoves} moves',
-                              style: NeoTypography.label(fontSize: 9),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   );
