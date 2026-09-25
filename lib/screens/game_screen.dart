@@ -175,47 +175,52 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       backgroundColor: NeoColors.background,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Custom Neo-Brutalist App Bar
-            _buildAppBar(),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Column(
+              children: [
+                // Custom Neo-Brutalist App Bar
+                _buildAppBar(),
 
-            // Top Stat Bar (Percobaan, Pasangan, Waktu)
-            _buildStatsBar(),
+                // Top Stat Bar (Percobaan, Pasangan, Waktu)
+                _buildStatsBar(),
 
-            // Game Board Grid
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Center(
-                  child: AspectRatio(
-                    aspectRatio: _currentLevel.cols / _currentLevel.rows,
-                    child: GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _cards.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: _currentLevel.cols,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 1.0,
+                // Game Board Grid
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Center(
+                      child: AspectRatio(
+                        aspectRatio: _currentLevel.cols / _currentLevel.rows,
+                        child: GridView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _cards.length,
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: _currentLevel.cols,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 1.0,
+                          ),
+                          itemBuilder: (context, index) {
+                            return NeoCardWidget(
+                              key: ValueKey(_cards[index].id),
+                              card: _cards[index],
+                              isInteractive: !_isProcessing,
+                              onTap: () => _onCardTapped(index),
+                            );
+                          },
+                        ),
                       ),
-                      itemBuilder: (context, index) {
-                        return NeoCardWidget(
-                          key: ValueKey(_cards[index].id),
-                          card: _cards[index],
-                          isInteractive: !_isProcessing,
-                          onTap: () => _onCardTapped(index),
-                        );
-                      },
                     ),
                   ),
                 ),
-              ),
-            ),
 
-            // Bottom Control Action
-            _buildBottomControls(),
-          ],
+                // Bottom Control Action
+                _buildBottomControls(),
+              ],
+            ),
+          ),
         ),
       ),
     );
