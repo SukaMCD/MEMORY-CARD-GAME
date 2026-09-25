@@ -1,43 +1,43 @@
-# ⚡ Memory Match Neo - Flutter Speed Code Challenge
+# Memory Match Card - Neo-Brutalism
 
-Aplikasi mobile game **Memory Match Card** yang dikembangkan menggunakan **Flutter** dengan pendekatan desain **Neo-Brutalism** untuk kegiatan **Flutter Speed Code Challenge**.
-
----
-
-## 🎨 Karakteristik Gaya Desain: Neo-Brutalism
-
-Aplikasi ini mengadopsi prinsip desain **Neo-Brutalism** secara menyeluruh:
-- **Tebal Border:** `3px - 4px` solid border hitam (`#121212`) pada seluruh elemen (kartu, tombol, banner, badge).
-- **Hard Drop Shadow:** Bayangan tegas `offset: (4, 4)` tanpa blur (`blurRadius: 0`).
-- **Palet Warna Pop Kontras Tinggi:** Warm Cream (`#FFFBEB`), Electric Yellow (`#FFE600`), Hot Pink (`#FF5C8D`), Electric Cyan (`#00E5FF`), Neon Green (`#26DE81`), dan Royal Purple.
-- **Tipografi Bold Modern:** Font *Space Grotesk* dari Google Fonts dengan bobot font tebal dan label uppercase.
-- **Efek Taktil:** Tombol dengan animasi tekanan nyata (*press-down translation*).
-- **Animasi Flip 3D:** Kartu berputar pada sumbu Y (3D perspective transform) saat dibuka maupun ditutup.
+Aplikasi mobile game Memory Match Card berbasis Flutter yang dibuat untuk kegiatan Flutter Speed Code Challenge. Aplikasi ini menerapkan gaya desain Neo-Brutalism dengan mekanisme permainan mencocokkan pasangan kartu tertutup melalui 5 tingkat kesulitan.
 
 ---
 
-## 🚀 Fitur Utama
+## Karakteristik Desain (Neo-Brutalism)
 
-1. **Menampilkan Kartu Tertutup:** Seluruh kartu tertutup di awal ronde dengan motif Neo-Brutalist dan ikon tanda tanya.
-2. **Membuka Kartu Saat Dipilih (3D Flip Animation):** Kartu berputar dinamis secara 3D saat disentuh untuk menampilkan emoji dan label.
-3. **Mencocokkan Pasangan Kartu:** Logika membandingkan 2 kartu yang terbuka. Jika cocok, kartu terkunci dengan status sukses; jika tidak cocok, kartu tertutup kembali otomatis setelah jeda waktu singkat.
-4. **Menghitung Percobaan (Moves Counter):** Setiap kali pemain membuka sepasang kartu, counter percobaan bertambah secara real-time.
-5. **Timer Permainan:** Menghitung waktu bermain pemain dari detik ke detik.
-6. **5 Level Tantangan:**
-   - **Level 1 (Warm Up):** Grid `2 × 2` (4 kartu / 2 pasang) — Tema Buah 🍎🍌
-   - **Level 2 (Rookie):** Grid `3 × 2` (6 kartu / 3 pasang) — Tema Hewan 🐱🐶🦊
-   - **Level 3 (Challenger):** Grid `4 × 2` (8 kartu / 4 pasang) — Tema Kendaraan 🚀🏎️✈️🚁
-   - **Level 4 (Master):** Grid `4 × 3` (12 kartu / 6 pasang) — Tema Hobi & Olahraga ⚽🎮🏀🎸🛹🥊
-   - **Level 5 (Grandmaster):** Grid `4 × 4` (16 kartu / 8 pasang) — Tema Elemen ⚡🔥💎🌈🌟🔮🍀🎯
-7. **Sistem Bintang & Progres Level:**
-   - Bintang 1 s/d 3 dihitung berdasarkan efisiensi jumlah percobaan terhadap target tiap level.
-   - Menyelesaikan level otomatis membuka (*unlock*) level berikutnya.
-   - Rekor skor terbaik (*best moves*) tersimpan untuk setiap level.
-8. **Dialog Kemenangan Interaktif (Victory Modal):** Menampilkan perolehan bintang, rincian percobaan, waktu tempuh, serta tombol navigasi level berikutnya.
+Aplikasi dibangun dengan prinsip desain Neo-Brutalism yang konsisten pada seluruh komponen:
+- Border hitam tegas berukuran 3 hingga 3.5 px di semua kartu, tombol, container, dan badge.
+- Hard shadow tanpa blur (`blurRadius: 0`) dengan offset `(4, 4)` untuk memberikan efek kedalaman datar yang kuat.
+- Palet warna kontras tinggi, menggunakan perpaduan Warm Cream sebagai warna dasar dengan warna aksen seperti Electric Yellow, Hot Pink, Cyan, Lime Green, dan Oranye.
+- Sudut komponen sedikit melengkung (radius 8-14 px) untuk menjaga kesan geometris yang rapi.
+- Tipografi Space Grotesk dengan ketebalan bold pada teks judul dan tombol.
+- Efek interaksi tombol taktil yang bergeser ke bawah saat ditekan (press-down effect).
 
 ---
 
-## 📊 Entity Relationship Diagram (ERD)
+## Fitur Aplikasi
+
+1. **Kartu Tertutup**: Semua kartu tertutup di awal permainan dengan motif tanda tanya dan warna khas Neo-Brutalist.
+2. **Animasi Buka Kartu (3D Flip)**: Kartu berputar secara 3D pada sumbu horizontal saat dipilih oleh pemain.
+3. **Pencocokan Pasangan Kartu**: Logika memeriksa kesamaan identitas kartu. Jika cocok, kartu akan tetap terbuka dan terkunci; jika tidak cocok, kartu akan tertutup kembali secara otomatis setelah jeda waktu tertentu.
+4. **Penghitung Percobaan (Moves Counter)**: Menghitung setiap percobaan pemain membuka dua kartu.
+5. **Timer Permainan**: Menghitung durasi permainan secara realtime dari awal hingga level selesai.
+6. **5 Level Permainan**:
+   - Level 1: Grid 2x2 (4 kartu / 2 pasang) - Tema Buah
+   - Level 2: Grid 3x2 (6 kartu / 3 pasang) - Tema Hewan
+   - Level 3: Grid 4x2 (8 kartu / 4 pasang) - Tema Transportasi
+   - Level 4: Grid 4x3 (12 kartu / 6 pasang) - Tema Hobi & Olahraga
+   - Level 5: Grid 4x4 (16 kartu / 8 pasang) - Tema Elemen & Alam
+7. **Sistem Bintang dan Unlock Level**:
+   - Pemain mendapatkan 1 sampai 3 bintang berdasarkan jumlah percobaan terhadap target tiap level.
+   - Menyelesaikan suatu level akan otomatis membuka level berikutnya.
+   - Skor percobaan terbaik disimpan pada masing-masing level.
+8. **Dialog Kemenangan**: Menampilkan ringkasan bintang, jumlah percobaan, waktu tempuh, serta opsi untuk lanjut ke level berikutnya atau mengulang level.
+
+---
+
+## Entity Relationship Diagram (ERD)
 
 ```mermaid
 erDiagram
@@ -47,88 +47,94 @@ erDiagram
     GAME_SESSION ||--|{ GAME_CARD : "mengontrol status"
 
     GAME_LEVEL {
-        int level_number PK "Level 1 s/d 5"
+        int level_number PK "Nomor Level 1-5"
         string level_name "Nama Level"
-        int grid_rows "Jumlah baris grid"
-        int grid_cols "Jumlah kolom grid"
+        int grid_rows "Jumlah baris"
+        int grid_cols "Jumlah kolom"
         int total_pairs "Jumlah pasang kartu"
-        int target_moves "Target percobaan efisien"
+        int target_moves "Target efisiensi moves"
     }
 
     GAME_CARD {
-        string card_id PK "ID unik kartu per ronde"
+        string card_id PK "ID unik kartu"
         int pair_id FK "ID identitas pasangan"
-        string emoji "Emoji kartu"
+        string emoji "Konten kartu"
         string title "Nama item"
-        boolean is_face_up "Status terbuka / tertutup"
-        boolean is_matched "Status berhasil cocok"
+        boolean is_face_up "Status terbuka"
+        boolean is_matched "Status cocok"
     }
 
     GAME_SESSION {
-        string session_id PK "ID sesi permainan aktif"
+        string session_id PK "ID sesi aktif"
         int level_number FK "Level yang dimainkan"
-        int moves_count "Jumlah percobaan (flips / 2)"
-        int matches_found "Pasangan berhasil dicocokkan"
-        int elapsed_seconds "Waktu bermain (detik)"
-        int stars_earned "Bintang diraih (1-3)"
+        int moves_count "Jumlah percobaan"
+        int matches_found "Jumlah pasangan cocok"
+        int elapsed_seconds "Waktu bermain"
+        int stars_earned "Perolehan bintang"
         boolean is_completed "Status selesai"
     }
 
     PLAYER_PROGRESS {
         int level_number PK, FK "Nomor level"
-        boolean is_unlocked "Status kunci level"
-        int best_moves "Rekor percobaan paling sedikit"
-        int best_time_seconds "Rekor waktu terbaik"
-        int stars_earned "Bintang tertinggi didapat"
+        boolean is_unlocked "Status level terbuka"
+        int best_moves "Percobaan tersedikit"
+        int best_time_seconds "Waktu tercepat"
+        int stars_earned "Bintang tertinggi"
     }
 ```
 
 ---
 
-## 📂 Struktur Direktori Proyek
+## Struktur Direktori
 
 ```
 lib/
-├── main.dart                      # Entry point & orientasi layar
+├── main.dart                      # Inisialisasi aplikasi dan orientasi layar
 ├── theme/
-│   └── neo_brutalism_theme.dart   # Warna pop, border 3px, hard shadows, tipografi
+│   └── neo_brutalism_theme.dart   # Konstanta warna, dekorasi border, dan tipografi
 ├── models/
-│   ├── game_card.dart             # Model data kartu game
-│   ├── game_level.dart            # Konfigurasi 5 level dan data kartu
-│   └── player_progress.dart       # Model pencatat rekor & unlock level
+│   ├── game_card.dart             # Model objek kartu
+│   ├── game_level.dart            # Data konfigurasi 5 level
+│   └── player_progress.dart       # Model penyimpanan rekor pemain
 ├── services/
-│   └── game_storage.dart          # State management progress & high score
+│   └── game_storage.dart          # Pengelolaan state level dan skor
 ├── widgets/
-│   ├── neo_card.dart              # Widget kartu 3D flip interaktif
-│   ├── neo_button.dart            # Tombol tactile neo-brutalist dengan press down
-│   ├── neo_badge.dart             # Indikator statistik (Moves, Matched, Timer)
-│   └── victory_dialog.dart        # Modal kemenangan saat menyelesaikan level
+│   ├── neo_card.dart              # Komponen kartu dengan animasi flip 3D
+│   ├── neo_button.dart            # Komponen tombol dengan efek tekan
+│   ├── neo_badge.dart             # Komponen tampilan indikator statistik
+│   └── victory_dialog.dart        # Dialog popup saat level selesai
 └── screens/
-    ├── home_screen.dart           # Menu utama & daftar pemilihan 5 level
-    └── game_screen.dart           # Papan permainan & state machine gameplay
+    ├── home_screen.dart           # Halaman menu dan pemilihan level
+    └── game_screen.dart           # Halaman arena bermain kartu
 ```
 
 ---
 
-## 💻 Cara Menjalankan Proyek
+## Cara Menjalankan Aplikasi
 
-1. **Clone repository ini:**
+1. Clone repositori ini:
    ```bash
    git clone https://github.com/SukaMCD/PTSF.git
    cd PTSF
    ```
 
-2. **Unduh dependensi Flutter:**
+2. Unduh paket dependensi:
    ```bash
    flutter pub get
    ```
 
-3. **Jalankan aplikasi:**
-   ```bash
-   flutter run
-   ```
+3. Jalankan aplikasi:
+   - Untuk Web / Browser:
+     ```bash
+     flutter run -d web-server --web-port=8080 --web-hostname=0.0.0.0
+     ```
+     Lalu buka `http://localhost:8080` pada browser.
+   - Untuk Emulator Android / Perangkat Fisik:
+     ```bash
+     flutter run
+     ```
 
-4. **Menjalankan pengujian (Tests):**
+4. Menjalankan pengujian (Unit/Widget Test):
    ```bash
    flutter test
    ```
