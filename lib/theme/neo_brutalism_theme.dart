@@ -68,12 +68,21 @@ class NeoBox {
 }
 
 class NeoTypography {
+  static const List<String> fontFallbacks = [
+    'Segoe UI',
+    'Roboto',
+    'Helvetica Neue',
+    'Arial',
+    'sans-serif',
+  ];
+
   static TextStyle heading({double fontSize = 24, Color color = NeoColors.dark}) {
     return GoogleFonts.spaceGrotesk(
       fontSize: fontSize,
       fontWeight: FontWeight.w900,
       color: color,
       letterSpacing: -0.5,
+      textStyle: const TextStyle(fontFamilyFallback: fontFallbacks),
     );
   }
 
@@ -82,6 +91,7 @@ class NeoTypography {
       fontSize: fontSize,
       fontWeight: FontWeight.w700,
       color: color,
+      textStyle: const TextStyle(fontFamilyFallback: fontFallbacks),
     );
   }
 
@@ -90,6 +100,7 @@ class NeoTypography {
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: color,
+      textStyle: const TextStyle(fontFamilyFallback: fontFallbacks),
     );
   }
 
@@ -99,6 +110,7 @@ class NeoTypography {
       fontWeight: FontWeight.w800,
       color: color,
       letterSpacing: 0.8,
+      textStyle: const TextStyle(fontFamilyFallback: fontFallbacks),
     );
   }
 }

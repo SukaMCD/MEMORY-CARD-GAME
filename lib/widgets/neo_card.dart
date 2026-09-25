@@ -57,6 +57,15 @@ class _NeoCardWidgetState extends State<NeoCardWidget>
     super.dispose();
   }
 
+  static const List<String> emojiFallbacks = [
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Noto Color Emoji',
+    'Android Emoji',
+    'EmojiSymbols',
+    'sans-serif',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -78,14 +87,31 @@ class _NeoCardWidgetState extends State<NeoCardWidget>
                 widget.onTap();
               }
             },
-            child: isFrontSide
-                ? Transform(
-                    // Flip back the front side text so it doesn't appear mirrored
-                    transform: Matrix4.identity()..rotateY(pi),
-                    alignment: Alignment.center,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Sisi Depan (selalu di-mount di render tree agar font & emoji sudah pre-loaded di memori)
+                Transform(
+                  transform: Matrix4.identity()..rotateY(pi),
+                  alignment: Alignment.center,
+                  child: Visibility(
+                    visible: isFrontSide,
+                    maintainState: true,
+                    maintainAnimation: true,
+                    maintainSize: true,
                     child: _buildFrontSide(),
-                  )
-                : _buildBackSide(),
+                  ),
+                ),
+                // Sisi Belakang
+                Visibility(
+                  visible: !isFrontSide,
+                  maintainState: true,
+                  maintainAnimation: true,
+                  maintainSize: true,
+                  child: _buildBackSide(),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -125,7 +151,10 @@ class _NeoCardWidgetState extends State<NeoCardWidget>
               opacity: 0.15,
               child: Text(
                 widget.card.emoji,
-                style: const TextStyle(fontSize: 60),
+                style: const TextStyle(
+                  fontSize: 60,
+                  fontFamilyFallback: emojiFallbacks,
+                ),
               ),
             ),
           ),
@@ -138,7 +167,10 @@ class _NeoCardWidgetState extends State<NeoCardWidget>
                 children: [
                   Text(
                     widget.card.emoji,
-                    style: const TextStyle(fontSize: 38),
+                    style: const TextStyle(
+                      fontSize: 38,
+                      fontFamilyFallback: emojiFallbacks,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Container(
