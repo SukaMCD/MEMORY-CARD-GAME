@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/game_card.dart';
 import '../models/game_level.dart';
@@ -186,32 +187,50 @@ class _GameScreenState extends State<GameScreen> {
                 // Top Stat Bar (Percobaan, Pasangan, Waktu)
                 _buildStatsBar(),
 
-                // Game Board Grid
+                // Game Board Grid (Responsif tinggi & lebar layar)
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Center(
-                      child: AspectRatio(
-                        aspectRatio: _currentLevel.cols / _currentLevel.rows,
-                        child: GridView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _cards.length,
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: _currentLevel.cols,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 1.0,
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final double spacing = _currentLevel.rows >= 4 ? 8.0 : 10.0;
+                        final int cols = _currentLevel.cols;
+                        final int rows = _currentLevel.rows;
+
+                        final double maxCardWidth =
+                            (constraints.maxWidth - (cols - 1) * spacing) / cols;
+                        final double maxCardHeight =
+                            (constraints.maxHeight - (rows - 1) * spacing) / rows;
+                        final double cardSize = min(maxCardWidth, maxCardHeight);
+
+                        final double boardWidth = cols * cardSize + (cols - 1) * spacing;
+                        final double boardHeight = rows * cardSize + (rows - 1) * spacing;
+
+                        return Center(
+                          child: SizedBox(
+                            width: boardWidth,
+                            height: boardHeight,
+                            child: GridView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _cards.length,
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: cols,
+                                crossAxisSpacing: spacing,
+                                mainAxisSpacing: spacing,
+                                childAspectRatio: 1.0,
+                              ),
+                              itemBuilder: (context, index) {
+                                return NeoCardWidget(
+                                  key: ValueKey(_cards[index].id),
+                                  card: _cards[index],
+                                  isInteractive: !_isProcessing,
+                                  onTap: () => _onCardTapped(index),
+                                );
+                              },
+                            ),
                           ),
-                          itemBuilder: (context, index) {
-                            return NeoCardWidget(
-                              key: ValueKey(_cards[index].id),
-                              card: _cards[index],
-                              isInteractive: !_isProcessing,
-                              onTap: () => _onCardTapped(index),
-                            );
-                          },
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ),
                 ),

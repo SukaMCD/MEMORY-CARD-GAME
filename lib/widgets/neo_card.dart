@@ -129,31 +129,37 @@ class _NeoCardWidgetState extends State<NeoCardWidget>
               ),
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                widget.card.emoji,
-                style: const TextStyle(fontSize: 38),
-              ),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: NeoColors.dark,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  widget.card.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: NeoTypography.label(
-                    fontSize: 9,
-                    color: Colors.white,
+          Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    widget.card.emoji,
+                    style: const TextStyle(fontSize: 38),
                   ),
-                ),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: NeoColors.dark,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      widget.card.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: NeoTypography.label(
+                        fontSize: 9,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
           if (widget.card.isMatched)
             Positioned(
@@ -204,23 +210,29 @@ class _NeoCardWidgetState extends State<NeoCardWidget>
               border: Border.all(color: NeoColors.dark, width: 2),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: NeoColors.primaryYellow,
-              shape: BoxShape.circle,
-              border: Border.all(color: NeoColors.dark, width: 2.5),
-              boxShadow: const [
-                BoxShadow(
-                  color: NeoColors.dark,
-                  offset: Offset(2, 2),
-                  blurRadius: 0,
+          Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: NeoColors.primaryYellow,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: NeoColors.dark, width: 2.5),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: NeoColors.dark,
+                      offset: Offset(2, 2),
+                      blurRadius: 0,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Text(
-              '?',
-              style: NeoTypography.heading(fontSize: 22, color: NeoColors.dark),
+                child: Text(
+                  '?',
+                  style: NeoTypography.heading(fontSize: 22, color: NeoColors.dark),
+                ),
+              ),
             ),
           ),
         ],
