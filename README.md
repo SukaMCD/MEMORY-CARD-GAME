@@ -18,22 +18,24 @@ Aplikasi dibangun dengan prinsip desain Neo-Brutalism yang konsisten pada seluru
 
 ## Fitur Aplikasi
 
-1. **Kartu Tertutup**: Semua kartu tertutup di awal permainan dengan motif tanda tanya dan warna khas Neo-Brutalist.
-2. **Animasi Buka Kartu (3D Flip)**: Kartu berputar secara 3D pada sumbu horizontal saat dipilih oleh pemain.
-3. **Pencocokan Pasangan Kartu**: Logika memeriksa kesamaan identitas kartu. Jika cocok, kartu akan tetap terbuka dan terkunci; jika tidak cocok, kartu akan tertutup kembali secara otomatis setelah jeda waktu tertentu.
-4. **Penghitung Percobaan (Moves Counter)**: Menghitung setiap percobaan pemain membuka dua kartu.
-5. **Timer Permainan**: Menghitung durasi permainan secara realtime dari awal hingga level selesai.
-6. **5 Level Permainan**:
+1. **Splash Screen**: Layar pembuka beranimasi dengan maskot kartu ganda, elemen ornamen retro, dan progress bar pemuatan sebelum masuk ke menu utama.
+2. **Kartu Tertutup**: Semua kartu tertutup di awal permainan dengan motif tanda tanya dan warna khas Neo-Brutalism.
+3. **Animasi Buka Kartu (3D Flip)**: Kartu berputar secara 3D pada sumbu horizontal saat dipilih oleh pemain dengan rendering yang stabil.
+4. **Pencocokan Pasangan Kartu**: Logika memeriksa kesamaan identitas kartu. Jika cocok, kartu terkunci terbuka; jika tidak cocok, kartu otomatis tertutup kembali setelah jeda singkat.
+5. **Penghitung Percobaan (Moves) & Timer**: Menghitung jumlah langkah dan waktu bermain secara waktu nyata.
+6. **Progress Bar & Indikator Bintang Dinamis**: Progress bar di bawah arena bermain menyusut setiap kali pemain melangkah. Ketiga bintang diposisikan sesuai ambang batas (threshold) langkah dan otomatis meredup saat bar menyusut melewati posisinya.
+7. **Batas Langkah & Game Over**: Setiap level memiliki batas langkah maksimal. Jika bar habis sebelum semua kartu cocok, dialog Game Over muncul dengan opsi mencoba ulang level atau kembali ke menu.
+8. **5 Level Permainan**:
    - Level 1: Grid 2x2 (4 kartu / 2 pasang) - Tema Buah
    - Level 2: Grid 3x2 (6 kartu / 3 pasang) - Tema Hewan
    - Level 3: Grid 4x2 (8 kartu / 4 pasang) - Tema Transportasi
    - Level 4: Grid 4x3 (12 kartu / 6 pasang) - Tema Hobi & Olahraga
    - Level 5: Grid 4x4 (16 kartu / 8 pasang) - Tema Elemen & Alam
-7. **Sistem Bintang dan Unlock Level**:
-   - Pemain mendapatkan 1 sampai 3 bintang berdasarkan jumlah percobaan terhadap target tiap level.
-   - Menyelesaikan suatu level akan otomatis membuka level berikutnya.
-   - Skor percobaan terbaik disimpan pada masing-masing level.
-8. **Dialog Kemenangan**: Menampilkan ringkasan bintang, jumlah percobaan, waktu tempuh, serta opsi untuk lanjut ke level berikutnya atau mengulang level.
+9. **Sistem Skor & Unlock Level**:
+   - Pemain memperoleh 1 hingga 3 bintang sesuai efisiensi langkah.
+   - Menyelesaikan suatu level otomatis membuka level berikutnya.
+   - Rekor langkah tersedikit dan waktu terbaik disimpan secara lokal.
+10. **Dialog Hasil (Victory & Game Over)**: Menampilkan statistik performa dan navigasi cepat antar level.
 
 ---
 
@@ -52,7 +54,8 @@ erDiagram
         int grid_rows "Jumlah baris"
         int grid_cols "Jumlah kolom"
         int total_pairs "Jumlah pasang kartu"
-        int target_moves "Target efisiensi moves"
+        int target_moves "Target efisiensi 3 bintang"
+        int max_moves "Batas maksimal langkah sebelum kalah"
     }
 
     GAME_CARD {
@@ -72,6 +75,7 @@ erDiagram
         int elapsed_seconds "Waktu bermain"
         int stars_earned "Perolehan bintang"
         boolean is_completed "Status selesai"
+        boolean is_game_over "Status kehabisan langkah"
     }
 
     PLAYER_PROGRESS {
@@ -89,24 +93,27 @@ erDiagram
 
 ```
 lib/
-├── main.dart                      # Inisialisasi aplikasi dan orientasi layar
+├── main.dart                      # Entry point, orientasi layar, dan inisialisasi aplikasi
 ├── theme/
-│   └── neo_brutalism_theme.dart   # Konstanta warna, dekorasi border, dan tipografi
+│   └── neo_brutalism_theme.dart   # Desain sistem: warna, border, bayangan, dan tipografi
 ├── models/
-│   ├── game_card.dart             # Model objek kartu
-│   ├── game_level.dart            # Data konfigurasi 5 level
-│   └── player_progress.dart       # Model penyimpanan rekor pemain
+│   ├── game_card.dart             # Model objek kartu permainan
+│   ├── game_level.dart            # Konfigurasi data dan ambang langkah 5 level
+│   └── player_progress.dart       # Model rekor dan progres pemain
 ├── services/
-│   └── game_storage.dart          # Pengelolaan state level dan skor
+│   └── game_storage.dart          # Pengelolaan state progres dan penyimpanan lokal
 ├── widgets/
 │   ├── neo_card.dart              # Komponen kartu dengan animasi flip 3D
-│   ├── neo_button.dart            # Komponen tombol dengan efek tekan
-│   ├── neo_badge.dart             # Komponen tampilan indikator statistik
-│   └── victory_dialog.dart        # Dialog popup saat level selesai
+│   ├── neo_button.dart            # Komponen tombol bergaya taktil
+│   ├── neo_badge.dart             # Komponen indikator statistik (Moves, Matched, Time)
+│   ├── victory_dialog.dart        # Dialog kemenangan saat level selesai
+│   └── game_over_dialog.dart      # Dialog saat langkah pemain habis
 └── screens/
-    ├── home_screen.dart           # Halaman menu dan pemilihan level
-    └── game_screen.dart           # Halaman arena bermain kartu
+    ├── splash_screen.dart         # Layar pembuka beranimasi interaktif
+    ├── home_screen.dart           # Halaman menu utama dan pemilihan level
+    └── game_screen.dart           # Arena permainan kartu dan kontrol bar
 ```
+
 
 ---
 
