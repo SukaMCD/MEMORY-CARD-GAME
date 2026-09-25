@@ -114,8 +114,8 @@ lib/
 
 1. Clone repositori ini:
    ```bash
-   git clone https://github.com/SukaMCD/PTSF.git
-   cd PTSF
+   git clone https://github.com/SukaMCD/MEMORY-CARD-GAME.git
+   cd MEMORY-CARD-GAME
    ```
 
 2. Unduh paket dependensi:
